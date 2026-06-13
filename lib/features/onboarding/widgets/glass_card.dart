@@ -66,10 +66,10 @@ class GlassCard extends StatelessWidget {
                 end: Alignment.bottomRight,
                 colors: [
                   (customBackgroundColor ?? defaultBackground).withValues(
-                    alpha: (customBackgroundColor ?? defaultBackground).opacity * 1.5,
+                    alpha: (customBackgroundColor ?? defaultBackground).a * 1.5,
                   ),
                   (customBackgroundColor ?? defaultBackground).withValues(
-                    alpha: (customBackgroundColor ?? defaultBackground).opacity * 0.5,
+                    alpha: (customBackgroundColor ?? defaultBackground).a * 0.5,
                   ),
                 ],
               ),

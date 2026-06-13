@@ -112,6 +112,7 @@ class OnboardingController extends ChangeNotifier {
     _profile = UserProfile.empty();
     _currentStep = 0;
     notifyListeners();
+    if (!context.mounted) return;
     Navigator.pushNamedAndRemoveUntil(context, '/onboarding', (route) => false);
   }
 }
