@@ -3,7 +3,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controller/notes_controller.dart';
-import '../models/note_model.dart';
+import '../models/attachment_model.dart';
+import '../widgets/attachment_picker.dart';
+import '../widgets/attachment_tile.dart';
+import 'attachment_preview.dart';
 
 class NoteEditor extends StatefulWidget {
   final String noteId;
@@ -331,6 +334,27 @@ class _NoteEditorState extends State<NoteEditor> {
 
                       const Spacer(),
 
+                      // Attach file button
+                      GestureDetector(
+                        onTap: () => AttachmentPicker.show(context, widget.noteId),
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.05)
+                                : Colors.black.withValues(alpha: 0.04),
+                          ),
+                          child: Icon(
+                            Icons.attach_file_rounded,
+                            size: 18,
+                            color: theme.textTheme.bodyMedium?.color,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+
                       // Pin toggle
                       GestureDetector(
                         onTap: () => controller.togglePin(widget.noteId),
@@ -474,12 +498,183 @@ class _NoteEditorState extends State<NoteEditor> {
                           ),
                         ),
 
+                        // ── Attachments Section ──────────────────────
+                        _buildAttachmentsSection(context, controller, theme, isDark),
+
                         const SizedBox(height: 60),
                       ],
                     ),
                   ),
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAttachmentsSection(
+    BuildContext context,
+    NotesController controller,
+    ThemeData theme,
+    bool isDark,
+  ) {
+    final attachments = controller.getAttachmentsForNote(widget.noteId);
+
+    if (attachments.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(height: 20),
+
+        // Divider
+        Container(
+          height: 1,
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.05)
+              : Colors.black.withValues(alpha: 0.05),
+        ),
+        const SizedBox(height: 16),
+
+        // Header
+        Row(
+          children: [
+            Icon(
+              Icons.attach_file_rounded,
+              size: 16,
+              color: theme.colorScheme.primary,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              'Attachments',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                '${attachments.length}',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ),
+            const Spacer(),
+            GestureDetector(
+              onTap: () => AttachmentPicker.show(context, widget.noteId),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.15),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.add_rounded,
+                      size: 14,
+                      color: theme.colorScheme.primary,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Add',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+
+        // Attachment tiles
+        ...attachments.map((attachment) => AttachmentTile(
+              attachment: attachment,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => AttachmentPreview(attachment: attachment),
+                  ),
+                );
+              },
+              onDelete: () {
+                _showDeleteAttachmentDialog(
+                    context, controller, attachment);
+              },
+            )),
+      ],
+    );
+  }
+
+  void _showDeleteAttachmentDialog(
+    BuildContext context,
+    NotesController controller,
+    AttachmentModel attachment,
+  ) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1A1F2E) : Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          'Remove Attachment',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        content: Text(
+          'Delete "${attachment.fileName}"? This cannot be undone.',
+          style: theme.textTheme.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: theme.textTheme.bodyMedium?.color,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              controller.removeAttachment(widget.noteId, attachment.id);
+              Navigator.of(ctx).pop();
+            },
+            child: const Text(
+              'Delete',
+              style: TextStyle(
+                color: Colors.redAccent,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],

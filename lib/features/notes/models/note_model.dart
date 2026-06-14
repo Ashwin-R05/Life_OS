@@ -4,6 +4,7 @@ class NoteModel {
   final String content;
   final String folder; // 'All', 'Study', 'Ideas', 'Knowledge', 'Projects'
   final bool isPinned;
+  final List<String> attachmentIds;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -13,6 +14,7 @@ class NoteModel {
     required this.content,
     required this.folder,
     this.isPinned = false,
+    this.attachmentIds = const [],
     required this.createdAt,
     required this.updatedAt,
   });
@@ -23,6 +25,7 @@ class NoteModel {
     String? content,
     String? folder,
     bool? isPinned,
+    List<String>? attachmentIds,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -32,6 +35,7 @@ class NoteModel {
       content: content ?? this.content,
       folder: folder ?? this.folder,
       isPinned: isPinned ?? this.isPinned,
+      attachmentIds: attachmentIds ?? this.attachmentIds,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -44,6 +48,7 @@ class NoteModel {
       'content': content,
       'folder': folder,
       'isPinned': isPinned,
+      'attachmentIds': attachmentIds,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };
@@ -56,6 +61,10 @@ class NoteModel {
       content: json['content'] as String,
       folder: json['folder'] as String,
       isPinned: json['isPinned'] as bool? ?? false,
+      attachmentIds: (json['attachmentIds'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );

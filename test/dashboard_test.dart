@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:life_os/features/dashboard/controller/dashboard_controller.dart';
-import 'package:life_os/features/dashboard/models/dashboard_widget_model.dart';
+
 
 void main() {
   setUp(() {

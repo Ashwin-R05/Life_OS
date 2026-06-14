@@ -17,6 +17,9 @@ subprojects {
 }
 subprojects {
     project.evaluationDependsOn(":app")
+    if (name == "file_picker") {
+        plugins.apply("org.jetbrains.kotlin.android")
+    }
 }
 
 tasks.register<Delete>("clean") {
