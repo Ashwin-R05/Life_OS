@@ -128,7 +128,7 @@ class _WidgetPickerState extends State<WidgetPicker> {
               child: ListView.separated(
                 shrinkWrap: true,
                 itemCount: inactiveTypes.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                separatorBuilder: (_, _) => const SizedBox(height: 10),
                 itemBuilder: (context, index) {
                   final item = inactiveTypes[index];
                   final isSelected = _selectedType == item['type'];

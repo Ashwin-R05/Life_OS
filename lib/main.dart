@@ -6,6 +6,7 @@ import 'features/onboarding/screens/onboarding_page_view.dart';
 import 'features/onboarding/screens/workspace_creation_screen.dart';
 import 'features/onboarding/services/storage_service.dart';
 import 'features/dashboard/controller/dashboard_controller.dart';
+import 'features/notes/controller/notes_controller.dart';
 import 'shared/screens/home_screen.dart';
 
 void main() async {
@@ -27,6 +28,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider<OnboardingController>.value(value: onboardingController),
         ChangeNotifierProvider(create: (_) => DashboardController()),
+        ChangeNotifierProvider(create: (_) => NotesController()),
       ],
       child: MyApp(initialRoute: hasCompleted ? '/home' : '/onboarding'),
     ),
