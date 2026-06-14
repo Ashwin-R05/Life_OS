@@ -6,6 +6,8 @@ import '../controller/notes_controller.dart';
 import '../models/attachment_model.dart';
 import '../widgets/attachment_picker.dart';
 import '../widgets/attachment_tile.dart';
+import '../widgets/link_text.dart';
+import '../widgets/related_notes.dart';
 import 'attachment_preview.dart';
 
 class NoteEditor extends StatefulWidget {
@@ -22,6 +24,7 @@ class _NoteEditorState extends State<NoteEditor> {
   late TextEditingController _contentController;
   Timer? _autoSaveTimer;
   String? _currentFolder;
+  bool _isPreviewMode = false;
 
   @override
   void initState() {
@@ -31,6 +34,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final controller = Provider.of<NotesController>(context, listen: false);
+      controller.logViewActivity(widget.noteId);
       final note = controller.getNoteById(widget.noteId);
       if (note != null) {
         _titleController.text = note.title;
@@ -227,6 +231,244 @@ class _NoteEditorState extends State<NoteEditor> {
     }
   }
 
+  void _showInsertLinkDialog() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final notesController = Provider.of<NotesController>(context, listen: false);
+    
+    // Get all other notes
+    final otherNotes = notesController.allNotes.where((n) => n.id != widget.noteId).toList();
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.7,
+              ),
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? const Color(0xFF0F172A).withValues(alpha: 0.95)
+                    : Colors.white.withValues(alpha: 0.95),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                border: Border(
+                  top: BorderSide(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : Colors.black.withValues(alpha: 0.06),
+                  ),
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.2)
+                            : Colors.black.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Link Another Note',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  if (otherNotes.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
+                      child: Center(
+                        child: Text(
+                          'No other notes found to link',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: isDark ? Colors.white.withValues(alpha: 0.35) : Colors.black.withValues(alpha: 0.35),
+                          ),
+                        ),
+                      ),
+                    )
+                  else
+                    Expanded(
+                      child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: otherNotes.length,
+                        itemBuilder: (context, index) {
+                          final note = otherNotes[index];
+                          final displayTitle = note.title.isEmpty ? 'Untitled Note' : note.title;
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 6),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(12),
+                                onTap: () {
+                                  final text = _contentController.text;
+                                  final selection = _contentController.selection;
+                                  final linkString = '[[${note.id}|${note.title.isEmpty ? 'Note' : note.title}]]';
+
+                                  if (selection.isValid) {
+                                    final newText = text.replaceRange(selection.start, selection.end, linkString);
+                                    _contentController.text = newText;
+                                    _contentController.selection = TextSelection.collapsed(
+                                      offset: selection.start + linkString.length,
+                                    );
+                                  } else {
+                                    _contentController.text = '$text $linkString';
+                                  }
+                                  _onTextChanged(); // Trigger auto-save
+                                  Navigator.of(ctx).pop();
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: isDark
+                                          ? Colors.white.withValues(alpha: 0.05)
+                                          : Colors.black.withValues(alpha: 0.05),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Text('📄', style: TextStyle(fontSize: 16)),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          displayTitle,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: theme.textTheme.bodyMedium?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        note.folder,
+                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                          fontSize: 11,
+                                          color: theme.colorScheme.primary,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildEditorToolbar(ThemeData theme, bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          // Preview / Edit Toggle
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _isPreviewMode = !_isPreviewMode;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: _isPreviewMode
+                    ? theme.colorScheme.primary.withValues(alpha: 0.12)
+                    : theme.cardColor.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: _isPreviewMode
+                      ? theme.colorScheme.primary.withValues(alpha: 0.3)
+                      : theme.dividerColor.withValues(alpha: 0.1),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    _isPreviewMode ? Icons.edit_rounded : Icons.visibility_rounded,
+                    size: 14,
+                    color: _isPreviewMode ? theme.colorScheme.primary : null,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    _isPreviewMode ? 'Editing Mode' : 'Preview Link Spans',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: _isPreviewMode ? theme.colorScheme.primary : null,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+
+          // Insert Link button (only show when not in preview mode)
+          if (!_isPreviewMode)
+            GestureDetector(
+              onTap: _showInsertLinkDialog,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: theme.cardColor.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: theme.dividerColor.withValues(alpha: 0.1),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.link_rounded,
+                      size: 14,
+                      color: theme.colorScheme.primary,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Link Note',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -419,32 +661,47 @@ class _NoteEditorState extends State<NoteEditor> {
                       children: [
                         const SizedBox(height: 8),
 
-                        // Title
-                        TextField(
-                          controller: _titleController,
-                          onChanged: (_) => _onTextChanged(),
-                          maxLines: null,
-                          style: theme.textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 24,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: 'Title',
-                            hintStyle:
-                                theme.textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 24,
-                              color: isDark
-                                  ? Colors.white.withValues(alpha: 0.2)
-                                  : Colors.black.withValues(alpha: 0.2),
-                            ),
-                            border: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            contentPadding: EdgeInsets.zero,
-                            filled: false,
-                          ),
-                        ),
+                        // Editor Toolbar (Edit/Preview modes, Link note)
+                        _buildEditorToolbar(theme, isDark),
+                        const SizedBox(height: 8),
+
+                        // Title Field or Text Preview
+                        _isPreviewMode
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                child: Text(
+                                  note.title.isEmpty ? 'Untitled Note' : note.title,
+                                  style: theme.textTheme.headlineMedium?.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 24,
+                                  ),
+                                ),
+                              )
+                            : TextField(
+                                controller: _titleController,
+                                onChanged: (_) => _onTextChanged(),
+                                maxLines: null,
+                                style: theme.textTheme.headlineMedium?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 24,
+                                ),
+                                decoration: InputDecoration(
+                                  hintText: 'Title',
+                                  hintStyle:
+                                      theme.textTheme.headlineMedium?.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 24,
+                                    color: isDark
+                                        ? Colors.white.withValues(alpha: 0.2)
+                                        : Colors.black.withValues(alpha: 0.2),
+                                  ),
+                                  border: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  contentPadding: EdgeInsets.zero,
+                                  filled: false,
+                                ),
+                              ),
 
                         const SizedBox(height: 4),
 
@@ -471,35 +728,61 @@ class _NoteEditorState extends State<NoteEditor> {
 
                         const SizedBox(height: 16),
 
-                        // Content
-                        TextField(
-                          controller: _contentController,
-                          onChanged: (_) => _onTextChanged(),
-                          maxLines: null,
-                          minLines: 20,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            fontSize: 15,
-                            height: 1.6,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: 'Start writing...',
-                            hintStyle:
-                                theme.textTheme.bodyLarge?.copyWith(
-                              fontSize: 15,
-                              color: isDark
-                                  ? Colors.white.withValues(alpha: 0.2)
-                                  : Colors.black.withValues(alpha: 0.2),
-                            ),
-                            border: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            contentPadding: EdgeInsets.zero,
-                            filled: false,
-                          ),
-                        ),
+                        // Content Field or Clickable Link Spans Preview
+                        _isPreviewMode
+                            ? Padding(
+                                padding: const EdgeInsets.only(bottom: 24),
+                                child: LinkText(
+                                  text: note.content.isEmpty ? 'No content' : note.content,
+                                  onLinkTap: (linkedNoteId) {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => NoteEditor(noteId: linkedNoteId),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              )
+                            : TextField(
+                                controller: _contentController,
+                                onChanged: (_) => _onTextChanged(),
+                                maxLines: null,
+                                minLines: 20,
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  fontSize: 15,
+                                  height: 1.6,
+                                ),
+                                decoration: InputDecoration(
+                                  hintText: 'Start writing...',
+                                  hintStyle:
+                                      theme.textTheme.bodyLarge?.copyWith(
+                                    fontSize: 15,
+                                    color: isDark
+                                        ? Colors.white.withValues(alpha: 0.2)
+                                        : Colors.black.withValues(alpha: 0.2),
+                                  ),
+                                  border: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  contentPadding: EdgeInsets.zero,
+                                  filled: false,
+                                ),
+                              ),
 
                         // ── Attachments Section ──────────────────────
                         _buildAttachmentsSection(context, controller, theme, isDark),
+
+                        // ── Related Notes & Backlinks (Second Brain) ─
+                        RelatedNotes(
+                          currentNoteId: widget.noteId,
+                          onNoteTap: (linkedNoteId) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => NoteEditor(noteId: linkedNoteId),
+                              ),
+                            );
+                          },
+                        ),
 
                         const SizedBox(height: 60),
                       ],

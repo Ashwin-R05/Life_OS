@@ -2,8 +2,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import '../models/note_model.dart';
 import '../models/attachment_model.dart';
+import '../models/activity_model.dart';
 import '../services/notes_storage_service.dart';
 import '../services/attachment_storage_service.dart';
+import '../services/activity_storage_service.dart';
 
 class NotesController extends ChangeNotifier {
   List<NoteModel> _allNotes = [];
@@ -89,8 +91,34 @@ class NotesController extends ChangeNotifier {
 
     _allNotes.insert(0, note);
     await NotesStorageService.saveNotes(_allNotes);
+    
+    // Log creation activity
+    final activity = ActivityModel(
+      id: 'act_${DateTime.now().millisecondsSinceEpoch}',
+      noteId: id,
+      noteTitle: 'Untitled Note',
+      actionType: 'created',
+      timestamp: DateTime.now(),
+    );
+    await ActivityStorageService.addActivity(activity);
+
     notifyListeners();
     return id;
+  }
+
+  /// Log a note viewed action
+  Future<void> logViewActivity(String noteId) async {
+    final note = getNoteById(noteId);
+    if (note == null) return;
+    
+    final activity = ActivityModel(
+      id: 'act_${DateTime.now().millisecondsSinceEpoch}',
+      noteId: noteId,
+      noteTitle: note.title.isEmpty ? 'Untitled Note' : note.title,
+      actionType: 'viewed',
+      timestamp: DateTime.now(),
+    );
+    await ActivityStorageService.addActivity(activity);
   }
 
   /// Update a note's title and content (called by auto-save)
@@ -106,6 +134,17 @@ class NotesController extends ChangeNotifier {
     );
 
     await NotesStorageService.saveNotes(_allNotes);
+
+    // Log update activity
+    final activity = ActivityModel(
+      id: 'act_${DateTime.now().millisecondsSinceEpoch}',
+      noteId: id,
+      noteTitle: _allNotes[index].title.isEmpty ? 'Untitled Note' : _allNotes[index].title,
+      actionType: 'updated',
+      timestamp: DateTime.now(),
+    );
+    await ActivityStorageService.addActivity(activity);
+
     notifyListeners();
   }
 

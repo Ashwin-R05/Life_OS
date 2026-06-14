@@ -7,6 +7,7 @@ import 'features/onboarding/screens/workspace_creation_screen.dart';
 import 'features/onboarding/services/storage_service.dart';
 import 'features/dashboard/controller/dashboard_controller.dart';
 import 'features/notes/controller/notes_controller.dart';
+import 'features/search/controller/search_controller.dart' as smart_search;
 import 'shared/screens/home_screen.dart';
 
 void main() async {
@@ -29,6 +30,7 @@ void main() async {
         ChangeNotifierProvider<OnboardingController>.value(value: onboardingController),
         ChangeNotifierProvider(create: (_) => DashboardController()),
         ChangeNotifierProvider(create: (_) => NotesController()),
+        ChangeNotifierProvider(create: (_) => smart_search.SearchController()),
       ],
       child: MyApp(initialRoute: hasCompleted ? '/home' : '/onboarding'),
     ),
