@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../features/dashboard/screens/dashboard_screen.dart';
 import '../../features/notes/screens/notes_screen.dart';
 import '../../features/search/screens/search_screen.dart';
+import '../../features/focus/screens/focus_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,6 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = const [
     DashboardScreen(),
     SearchScreen(),
+    FocusScreen(),
     NotesScreen(),
   ];
 
@@ -69,9 +71,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       isDark: isDark,
                     ),
                     _buildNavItem(
+                      icon: Icons.hourglass_empty_rounded,
+                      label: 'Focus',
+                      index: 2,
+                      theme: theme,
+                      isDark: isDark,
+                    ),
+                    _buildNavItem(
                       icon: Icons.note_alt_rounded,
                       label: 'Notes',
-                      index: 2,
+                      index: 3,
                       theme: theme,
                       isDark: isDark,
                     ),

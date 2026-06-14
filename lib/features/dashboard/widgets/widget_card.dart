@@ -232,28 +232,21 @@ class WidgetCard extends StatelessWidget {
 
     switch (type) {
       case 'notes':
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Idea Sandbox',
-              style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 13),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '• Build clean architecture files for life...',
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: isDark ? Colors.white.withValues(alpha: 0.5) : Colors.black.withValues(alpha: 0.5),
-                fontSize: 12,
-              ),
-            ),
-            if (isLarge) ...[
-              const SizedBox(height: 6),
+        return FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
               Text(
-                '• Outline presentation layout designs...',
+                'Idea Sandbox',
+                style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '• Build clean architecture files for life...',
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: theme.textTheme.bodyMedium?.copyWith(
@@ -261,48 +254,66 @@ class WidgetCard extends StatelessWidget {
                   fontSize: 12,
                 ),
               ),
-              const SizedBox(height: 6),
-              Text(
-                '• Brainstorming core modules roadmap...',
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: isDark ? Colors.white.withValues(alpha: 0.5) : Colors.black.withValues(alpha: 0.5),
-                  fontSize: 12,
+              if (isLarge) ...[
+                const SizedBox(height: 6),
+                Text(
+                  '• Outline presentation layout designs...',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: isDark ? Colors.white.withValues(alpha: 0.5) : Colors.black.withValues(alpha: 0.5),
+                    fontSize: 12,
+                  ),
                 ),
-              ),
-            ]
-          ],
+                const SizedBox(height: 6),
+                Text(
+                  '• Brainstorming core modules roadmap...',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: isDark ? Colors.white.withValues(alpha: 0.5) : Colors.black.withValues(alpha: 0.5),
+                    fontSize: 12,
+                  ),
+                ),
+              ]
+            ],
+          ),
         );
       case 'tasks':
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildMockTask(context, 'Write LifeOS widget engine', true),
-            const SizedBox(height: 8),
-            _buildMockTask(context, 'Implement local preferences storage', false),
-            if (isLarge) ...[
+        return FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildMockTask(context, 'Write LifeOS widget engine', true),
               const SizedBox(height: 8),
-              _buildMockTask(context, 'Register provider controllers in main', false),
+              _buildMockTask(context, 'Implement local preferences storage', false),
+              if (isLarge) ...[
+                const SizedBox(height: 8),
+                _buildMockTask(context, 'Register provider controllers in main', false),
+              ],
             ],
-          ],
+          ),
         );
       case 'habits':
         final showSevenDays = size != 'small';
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Atomic Tracker',
-              style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 13),
-            ),
-            const SizedBox(height: 4),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: Row(
+        return FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Atomic Tracker',
+                style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+              const SizedBox(height: 4),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   _buildHabitDot(context, 'M', true),
@@ -322,17 +333,17 @@ class WidgetCard extends StatelessWidget {
                   ],
                 ],
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Current streak: 4 days 🔥',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.primary,
-                fontSize: 11,
+              const SizedBox(height: 4),
+              Text(
+                'Current streak: 4 days 🔥',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.primary,
+                  fontSize: 11,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       case 'focus':
         final double progressSize = size == 'small'
@@ -369,31 +380,36 @@ class WidgetCard extends StatelessWidget {
           return Center(child: progressCircle);
         }
 
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            progressCircle,
-            const SizedBox(width: 20),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Session Active',
-                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, fontSize: 13),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Deep coding focus',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: isDark ? Colors.white.withValues(alpha: 0.5) : Colors.black.withValues(alpha: 0.5),
-                    fontSize: 11,
+        return FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              progressCircle,
+              const SizedBox(width: 20),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Session Active',
+                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, fontSize: 13),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  const SizedBox(height: 2),
+                  Text(
+                    'Deep coding focus',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: isDark ? Colors.white.withValues(alpha: 0.5) : Colors.black.withValues(alpha: 0.5),
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         );
       default:
         return const SizedBox();
