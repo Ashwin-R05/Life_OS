@@ -5,6 +5,7 @@ import 'features/onboarding/controller/onboarding_controller.dart';
 import 'features/onboarding/screens/onboarding_page_view.dart';
 import 'features/onboarding/screens/workspace_creation_screen.dart';
 import 'features/onboarding/services/storage_service.dart';
+import 'features/dashboard/controller/dashboard_controller.dart';
 import 'shared/screens/home_screen.dart';
 
 void main() async {
@@ -13,17 +14,20 @@ void main() async {
   // Check if user has already completed the onboarding flow
   final hasCompleted = await StorageService.hasCompletedOnboarding();
   
-  final controller = OnboardingController();
+  final onboardingController = OnboardingController();
   
   if (hasCompleted) {
     // Populate controller profile state from local storage
     final profile = await StorageService.getUserProfile();
-    controller.initProfile(profile);
+    onboardingController.initProfile(profile);
   }
 
   runApp(
-    ChangeNotifierProvider<OnboardingController>.value(
-      value: controller,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<OnboardingController>.value(value: onboardingController),
+        ChangeNotifierProvider(create: (_) => DashboardController()),
+      ],
       child: MyApp(initialRoute: hasCompleted ? '/home' : '/onboarding'),
     ),
   );
