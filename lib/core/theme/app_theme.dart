@@ -2,30 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Theme Accent Colors
-  static const Color darkBackground = Color(0xFF090D16);
-  static const Color darkCardBackground = Color(0x0FFFFFFF);
-  static const Color darkBorderColor = Color(0x1BFFFFFF);
-  static const Color darkPrimaryGlow = Color(0xFF00FFF0); // Neon Cyan
-  static const Color darkSecondaryGlow = Color(0xFFBD00FF); // Neon Purple
+  // Futuristic Theme Accent Colors
+  static const Color darkBackground = Color(0xFF050505);
+  static const Color darkCardBackground = Color(0x1AFFFFFF); // More visible glass
+  static const Color darkBorderColor = Color(0x33FFFFFF);
+  static const Color darkPrimaryGlow = Color(0xFF00FFCC); // Cyber Cyan
+  static const Color darkSecondaryGlow = Color(0xFFFF00FF); // Cyber Magenta
 
-  static const Color lightBackground = Color(0xFFF4F7FB);
-  static const Color lightCardBackground = Color(0x66FFFFFF);
+  static const Color lightBackground = Color(0xFFF0F4F8);
+  static const Color lightCardBackground = Color(0x80FFFFFF);
   static const Color lightBorderColor = Color(0x33000000);
-  static const Color lightPrimaryGlow = Color(0xFF007A87); // Deep Cyan
-  static const Color lightSecondaryGlow = Color(0xFF7B0099); // Deep Purple
+  static const Color lightPrimaryGlow = Color(0xFF00C4B4); // Bright Cyan
+  static const Color lightSecondaryGlow = Color(0xFFD500D5); // Bright Magenta
 
   // Background Mesh Blob Colors
   static const List<Color> darkBlobColors = [
-    Color(0x3C00FFF0), // Semi-transparent Neon Cyan
-    Color(0x28BD00FF), // Semi-transparent Neon Purple
-    Color(0x1E002BFF), // Deep Blue
+    Color(0x4000FFCC), // Cyber Cyan
+    Color(0x2AFF00FF), // Cyber Magenta
+    Color(0x1A0055FF), // Deep Cyber Blue
   ];
 
   static const List<Color> lightBlobColors = [
-    Color(0x2800D1FF),
-    Color(0x1CFF00E5),
-    Color(0x147700FF),
+    Color(0x3300C4B4),
+    Color(0x26D500D5),
+    Color(0x1A0066FF),
   ];
 
   static ThemeData get darkTheme {

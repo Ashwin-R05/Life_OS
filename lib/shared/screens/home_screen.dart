@@ -38,14 +38,14 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Container(
             decoration: BoxDecoration(
               color: isDark
-                  ? const Color(0xFF090D16).withValues(alpha: 0.85)
+                  ? const Color(0xFF050505).withValues(alpha: 0.85)
                   : Colors.white.withValues(alpha: 0.8),
               border: Border(
                 top: BorderSide(
                   color: isDark
-                      ? Colors.white.withValues(alpha: 0.06)
-                      : Colors.black.withValues(alpha: 0.06),
-                  width: 0.5,
+                      ? Colors.white.withValues(alpha: 0.15) // more visible border
+                      : Colors.black.withValues(alpha: 0.15),
+                  width: 1.0,
                 ),
               ),
             ),

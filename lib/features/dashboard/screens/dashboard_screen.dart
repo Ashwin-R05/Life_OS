@@ -48,13 +48,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final dashboardController = Provider.of<DashboardController>(context);
     final isEditMode = dashboardController.isEditMode;
 
-    // Glowing mesh blob gradient backgrounds
+    // Futuristic glowing mesh blob gradient backgrounds
     final blobColors = isDark ? [
+      theme.colorScheme.primary.withValues(alpha: 0.2), // increased opacity for futuristic feel
+      theme.colorScheme.secondary.withValues(alpha: 0.15),
+    ] : [
       theme.colorScheme.primary.withValues(alpha: 0.1),
       theme.colorScheme.secondary.withValues(alpha: 0.08),
-    ] : [
-      theme.colorScheme.primary.withValues(alpha: 0.05),
-      theme.colorScheme.secondary.withValues(alpha: 0.04),
     ];
 
     return Scaffold(
