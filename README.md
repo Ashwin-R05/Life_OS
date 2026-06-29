@@ -1,19 +1,63 @@
-# life_os
+# LifeOS
 
-A new Flutter project.
+LifeOS is a Flutter application aimed at personal productivity and life management, designed with a dynamic, futuristic, and cyberpunk aesthetic.
+
+## Features
+
+The application is structured using a feature-based architecture to maintain scalability and organization:
+
+- **Dashboard**: A customizable hub for an overview of your productivity.
+- **Focus**: Integrated timers and screen time limit management to help you stay concentrated.
+- **Notes**: A rich markdown editor supporting links and attachments for organized thoughts and project planning.
+- **Onboarding**: A seamless entry flow for setting up your profile, goals, and themes.
+- **Search**: Quick and powerful search capabilities across your notes, focus items, and overall workspace.
+
+## Tech Stack
+
+- **Framework**: [Flutter](https://flutter.dev)
+- **Language**: Dart
+- **State Management**: `provider` package
+- **Storage**: `flutter_secure_storage` for securely handling user preferences and data.
+
+## Aesthetics
+
+The user interface heavily leans into a futuristic cyberpunk style, utilizing neon colors like Cyber Cyan and Cyber Magenta set against sleek dark backgrounds to create an immersive productivity environment.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Prerequisites
 
-A few resources to get you started if this is your first Flutter project:
+Ensure you have the following installed:
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) (Ensure your Dart SDK constraint supports `>=3.11.0`)
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+### Installation
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# Life_OS
-# Life_OS
+1. **Clone the repository**
+   ```bash
+   git clone <repository_url>
+   cd life_os
+   ```
+
+2. **Install dependencies**
+   ```bash
+   flutter pub get
+   ```
+
+3. **Run tests**
+   ```bash
+   flutter test
+   ```
+
+4. **Run the app**
+   ```bash
+   flutter run
+   ```
+
+## Development
+
+- **Formatting**: The project relies on standard Dart formatting. Run `dart format lib/` before committing.
+- **Static Analysis**: Maintain code quality by running `flutter analyze`.
+
+## Architecture
+
+The source code is organized primarily under `lib/features/`, isolating business logic, UI, and services for each core module (dashboard, focus, notes, search, onboarding). This approach ensures components are decoupled and maintainable.
