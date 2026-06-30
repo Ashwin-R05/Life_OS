@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/dashboard_widget_model.dart';
+import '../../journal/controller/journal_controller.dart';
 import '../controller/dashboard_controller.dart';
 import '../../onboarding/widgets/glass_card.dart';
 
@@ -411,6 +412,66 @@ class WidgetCard extends StatelessWidget {
             ],
           ),
         );
+      case 'journal':
+        final isSmall = size == 'small';
+        return Consumer<JournalController>(
+          builder: (context, journalController, _) {
+            final entry = journalController.entries.isNotEmpty ? journalController.entries.first : null;
+            final hasEntry = entry != null;
+            final moodIcon = hasEntry
+                ? (entry.mood == 'Great' ? '🤩'
+                  : entry.mood == 'Good' ? '😊'
+                  : entry.mood == 'Okay' ? '😐'
+                  : entry.mood == 'Bad' ? '😔'
+                  : '😫')
+                : '📝';
+
+            return FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Text(moodIcon, style: const TextStyle(fontSize: 24)),
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            hasEntry ? 'Feeling ${entry.mood}' : 'No entries yet',
+                            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, fontSize: 14),
+                          ),
+                          Text(
+                            hasEntry ? 'Latest Entry' : 'Start journaling',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: isDark ? Colors.white.withValues(alpha: 0.5) : Colors.black.withValues(alpha: 0.5),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  if (!isSmall && hasEntry) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      entry.content,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: isDark ? Colors.white.withValues(alpha: 0.7) : Colors.black.withValues(alpha: 0.7),
+                        fontSize: 12,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ],
+              ),
+            );
+          },
+        );
       default:
         return const SizedBox();
     }
@@ -515,6 +576,12 @@ class WidgetCard extends StatelessWidget {
           title: 'Focus Sphere',
           icon: '⏱️',
           color: const Color(0xFFD500F9), // Purple
+        );
+      case 'journal':
+        return _WidgetAccents(
+          title: 'Daily Journal',
+          icon: '📖',
+          color: const Color(0xFFFF5252), // Red Accent
         );
       default:
         return _WidgetAccents(

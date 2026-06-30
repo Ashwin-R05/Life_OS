@@ -4,6 +4,7 @@ import '../../features/dashboard/screens/dashboard_screen.dart';
 import '../../features/notes/screens/notes_screen.dart';
 import '../../features/search/screens/search_screen.dart';
 import '../../features/focus/screens/focus_screen.dart';
+import '../../features/journal/screens/journal_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
     SearchScreen(),
     FocusScreen(),
     NotesScreen(),
+    JournalScreen(),
   ];
 
   @override
@@ -81,6 +83,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon: Icons.note_alt_rounded,
                       label: 'Notes',
                       index: 3,
+                      theme: theme,
+                      isDark: isDark,
+                    ),
+                    _buildNavItem(
+                      icon: Icons.book_rounded,
+                      label: 'Journal',
+                      index: 4,
                       theme: theme,
                       isDark: isDark,
                     ),

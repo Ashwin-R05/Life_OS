@@ -29,6 +29,7 @@ class _WidgetPickerState extends State<WidgetPicker> {
     {'type': 'tasks', 'title': 'Tasks Queue', 'icon': '✔️', 'desc': 'Personal backlog & board tracker'},
     {'type': 'habits', 'title': 'Habit Streaks', 'icon': '🔄', 'desc': 'Streak map & routines builder'},
     {'type': 'focus', 'title': 'Focus Sphere', 'icon': '⏱️', 'desc': 'Pomodoro timer & session keeper'},
+    {'type': 'journal', 'title': 'Daily Journal', 'icon': '📖', 'desc': 'Track mood and thoughts'},
   ];
 
   @override
