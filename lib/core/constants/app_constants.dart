@@ -74,5 +74,11 @@ class AppConstants {
       'subtitle': 'Android Usage stats blocker & widget overlays',
       'icon': '⏱️',
     },
+    {
+      'id': 'journal',
+      'title': 'Journal',
+      'subtitle': 'Mood tracking and daily thoughts',
+      'icon': '📖',
+    },
   ];
 }
