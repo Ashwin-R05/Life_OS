@@ -19,10 +19,6 @@ The application is structured using a feature-based architecture to maintain sca
 - **State Management**: `provider` package
 - **Storage**: `flutter_secure_storage` for securely handling user preferences and data.
 
-## Aesthetics
-
-The user interface heavily leans into a futuristic cyberpunk style, utilizing neon colors like Cyber Cyan and Cyber Magenta set against sleek dark backgrounds to create an immersive productivity environment.
-
 ## Getting Started
 
 ### Prerequisites
